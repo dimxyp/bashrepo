@@ -10,6 +10,8 @@ echo "except  SSHServer, above  subnets  will  be  excluded  from blocking"
 echo "===================================================================="
 echo "===================================================================="
 echo ""
+sleep 2
+echo ""
 read -p "Enter First Allowed Subnet [a.b.c.d/e]: " sub1 </dev/tty
 read -p "Enter Second Allowed Subnet [a.b.c.d/e]: " sub2 </dev/tty
 echo ""
