@@ -21,10 +21,6 @@ sed -i ' /^$/d ' /tmp/rules
 rls=$(cat /tmp/rules)
 for srv in $rls
 do
-esxcli network firewall ruleset set -r=$srv --allowed-all false
-done
-for srv in $rls
-do
 esxcli network firewall ruleset allowedip remove -r=$srv -i=$sub1
 esxcli network firewall ruleset allowedip remove -r=$srv -i=$sub2
 done
