@@ -1,7 +1,7 @@
 #!/bin/bash 
 #dimitris.xypolias@kyndryl.com 
 #git@github.com:dxfullv2/bashrepo/esxruleset 
-#wget -O - http://dl.dropbox.com/u/11210438/flockonus-stack.sh | bash
+#wget -O - https://raw.githubusercontent.com/dxfullv2/bashrepo/main/esxruleset.sh | sh
 read -p "Enter First Allowed Subnet [a.b.c.d/e]: " sub1
 read -p "Enter Second Allowed Subnet [a.b.c.d/e]: " sub2
 echo "=================================================="
