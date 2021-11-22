@@ -5,7 +5,7 @@
 echo ""
 echo "================================================================="
 echo "================================================================="
-echo "The following script removes prompt subnet for all ESXi firewall." 
+echo "The following script removes prompt subnet for all ESXi services." 
 echo "================================================================="
 echo "================================================================="
 echo ""
