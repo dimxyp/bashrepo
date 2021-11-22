@@ -9,6 +9,8 @@ echo "The following script removes prompt subnet for all ESXi firewall."
 echo "================================================================="
 echo "================================================================="
 echo ""
+sleep 2
+echo ""
 read -p "Enter First Blocked Subnet [a.b.c.d/e]: " sub1 </dev/tty
 read -p "Enter Second Blocked Subnet [a.b.c.d/e]: " sub2 </dev/tty
 echo ""
