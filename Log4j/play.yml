@@ -1,19 +1,31 @@
 - name: Check for Java Log Vulnerability
-  hosts: all
+  hosts: linuxos
   become: yes
   tasks:
-  - name : Check for Java Log Vulnerability
+  - name : Check for Java Log Vulnerability - LinuxOS
     copy:
       src=log4j2-scan
       dest=/tmp
       mode=0777
   - name: Execute the script
-    command: "/tmp/log4j2-scan /usr"
+    shell: |
+      /tmp/log4j2-scan /usr
+      /tmp/log4j2-scan /opt
+      /tmp/log4j2-scan /home
     no_log: True
     ignore_errors: yes
     register: myresults
   - name: LogFile
     local_action:
-      lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n {{ myresults.stdout }}"
+      lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ myresults.stdout }}"
         insertafter=EOF
         dest=/root/Log4j/log4j2-scan.log
+#====winos
+#  hosts: winos
+#  connection: winrm
+#  become: yes
+#  tasks:
+#  - name : Check for Java Log Vulnerability - WindowsOS
+#    copy:
+#      src=log4j2-scan
+#      dest=c:\
