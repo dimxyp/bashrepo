@@ -1,0 +1,5 @@
+[hosts]
+
+[hosts:vars]
+ansible_user = root
+ansible_password = 
