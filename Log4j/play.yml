@@ -1,0 +1,19 @@
+- name: Check for Java Log Vulnerability
+  hosts: all
+  become: yes
+  tasks:
+  - name : Check for Java Log Vulnerability
+    copy:
+      src=log4j2-scan
+      dest=/tmp
+      mode=0777
+  - name: Execute the script
+    command: "/tmp/log4j2-scan /usr"
+    no_log: True
+    ignore_errors: yes
+    register: myresults
+  - name: LogFile
+    local_action:
+      lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n {{ myresults.stdout }}"
+        insertafter=EOF
+        dest=/root/Log4j/log4j2-scan.log
