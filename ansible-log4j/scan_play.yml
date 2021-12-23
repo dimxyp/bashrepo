@@ -1,6 +1,6 @@
 #Kyndryl Log4j automation checker
 - name: Check for Java Log Vulnerability - LinuxOS
-  hosts: vcenter
+  hosts: linuxos #change to vcenter or duplicate task
   become: yes 
   #become_method: sudo #use for non root ssh logins only (i.e SRM)
   #become_user: root #use for non root ssh logins only (i.e SRM)
