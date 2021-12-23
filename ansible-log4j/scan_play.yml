@@ -1,0 +1,52 @@
+#Kyndryl Log4j automation checker
+#https://github.com/dxfullv2/bashrepo -Log4j branch
+- name: Check for Java Log Vulnerability - LinuxOS
+  hosts: linuxos # change to vcenter, or duplicate task
+  become: yes 
+  #become_method: sudo #use for non root ssh logins only (i.e SRM)
+  #become_user: root #use for non root ssh logins only (i.e SRM)
+  tasks:
+    - name : Copy Checker
+      copy: 
+        src=scan/log4j2-scan
+        dest=/tmp 
+        mode=0777
+    - name: Execute the script
+      shell: |
+        /tmp/log4j2-scan /usr
+        /tmp/log4j2-scan /opt
+        /tmp/log4j2-scan /home
+      no_log: True
+      ignore_errors: yes 
+      register: lnxres
+    - name: LogFile
+      local_action: 
+        lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ lnxres.stdout }}"
+        insertafter=EOF 
+        dest=scan/log4j2-scan.log
+    - name: Delete file
+      file:
+        path: /tmp/log4j2-scan
+        state: absent        
+- name: Check for Java Log Vulnerability - WindowsOS
+  connection: winrm
+  hosts: winos
+  tasks:
+    - name : Copy Checker
+      win_copy:
+        src: scan/log4j2-scan.exe
+        dest: C:\Windows\Temp\log4j2-scan.exe
+    - name: Execute the script
+      win_command: C:\Windows\Temp\log4j2-scan.exe c:\ #or change c:\ to specific path
+      no_log: True
+      ignore_errors: yes 
+      register: winres
+    - name: LogFile
+      local_action: 
+        lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ winres.stdout }}"
+        insertafter=EOF 
+        dest=scan/log4j2-scan.log
+    - name: Delete file
+      win_file:
+        path: C:\Windows\Temp\log4j2-scan.exe
+        state: absent
