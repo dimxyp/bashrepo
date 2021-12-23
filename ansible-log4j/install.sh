@@ -22,7 +22,7 @@ echo " Check: ansible-playbook check scan_play.yml (or vcfix_play.yml)"
 echo " Run using: ansible-playbook scan_play.yml (or vcfix_play.yml)"
 echo " ========================== "
 echo " 
-echo -e "${RED}
+echo -e "${RED}"
 read -n 1 -r -s -p "Are you ready? Press any key to continue..." </dev/tty
 echo ""
 echo -e "${NC}" 
