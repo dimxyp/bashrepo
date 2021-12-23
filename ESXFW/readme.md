@@ -1,1 +1,0 @@
-ESXi FW Script configuration
