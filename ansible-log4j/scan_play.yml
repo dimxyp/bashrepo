@@ -1,4 +1,5 @@
 #Kyndryl Log4j automation checker
+#https://github.com/dxfullv2/bashrepo -Log4j branch
 - name: Check for Java Log Vulnerability - LinuxOS
   hosts: linuxos # change to vcenter, or duplicate task
   become: yes 
