@@ -7,7 +7,7 @@
   tasks:
     - name : Copy Checker
       copy: 
-        src=log4j2-scan
+        src=scan/log4j2-scan
         dest=/tmp 
         mode=0777
     - name: Execute the script
@@ -22,7 +22,7 @@
       local_action: 
         lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ lnxres.stdout }}"
         insertafter=EOF 
-        dest=/root/Log4j/log4j2-scan.log
+        dest=/root/Log4j/scan/log4j2-scan.log
     - name: Delete file
       file:
         path: /tmp/log4j2-scan
@@ -44,7 +44,7 @@
       local_action: 
         lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ winres.stdout }}"
         insertafter=EOF 
-        dest=/root/Log4j/log4j2-scan.log
+        dest=/root/Log4j/scan/log4j2-scan.log
     - name: Delete file
       win_file:
         path: C:\Windows\Temp\log4j2-scan.exe
