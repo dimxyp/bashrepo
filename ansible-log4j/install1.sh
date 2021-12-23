@@ -21,11 +21,13 @@ echo " Include username/password on inventery file or use Ansible-vault"
 echo " Check: ansible-playbook check scan_play.yml (or vcfix_play.yml)"
 echo " Run using: ansible-playbook scan_play.yml (or vcfix_play.yml)"
 echo " ========================== "
-echo " 
+echo ""
 echo -e "${RED}"
+echo ""
 read -n 1 -r -s -p "Are you ready? Press any key to continue..." </dev/tty
 echo ""
 echo -e "${NC}" 
+echo ""
 read -e -p "Please enter playbook location ["/opt/Log4j"] : " -i "/opt/Log4j/" path </dev/tty
 mkdir /opt/Log4j/
 cd /opt/Log4j/
