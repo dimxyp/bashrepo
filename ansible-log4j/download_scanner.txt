@@ -1,0 +1,4 @@
+download 
+logpresso-log4j2-scan-2.6.1-linux.tar.gz
+logpresso-log4j2-scan-2.6.1-win64.7z
+https://kyndryl.ent.box.com/s/jcn4h0cfrmmwlup7pwi8fr2k0g4fbjj5
