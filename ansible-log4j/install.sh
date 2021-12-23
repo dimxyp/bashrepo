@@ -25,7 +25,7 @@ echo " Run using: ansible-playbook scan_play.yml (or vcfix_play.yml)"
 echo -e "${NC}" 
 echo " ========================== "
 echo ""
-read -n 1 -r -s -p "Are you ready? Press any key to continue..." </dev/tty
+read -n 1 -r -s -p "Are you ready? Press any key to continue...(CTRL-Z to exit)" </dev/tty
 echo ""
 read -e -p "Please enter playbook location ["/opt/Log4j"] : " -i "/opt/Log4j/" path </dev/tty
 mkdir /opt/Log4j/
