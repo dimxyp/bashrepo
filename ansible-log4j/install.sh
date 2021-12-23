@@ -7,9 +7,9 @@ echo "Ansible playbook preparation"
 echo "Download and unzip Kyndryl's scanners on /[installpath]/scan/"
 #echo "Download VMware vcenter fix on /[installpath]/fix/"
 echo "Prepare WinOS if needed using /[installpath]/scan/ConfigureRemotingForAnsible.ps1"
+echo "Extra packages: git, pexpect (vcfix), sshpass (vcfix)"
 echo " ========================== "
-echo "Extra packages: git, pexpect, sshpass"
-read -n 1 -r -s -p "Are you sure? Press any key to continue..." </dev/tty
+read -n 1 -r -s -p "Are you ready? Press any key to continue..." </dev/tty
 mkdir /opt/Log4j/
 cd /opt/Log4j/
 read -e -p "Please enter playbook location ["/opt/Log4j"] : " -i "/opt/Log4j/" path </dev/tty
