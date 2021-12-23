@@ -1,0 +1,35 @@
+#Kyndryl Log4j Fix 
+- name: Check for Java Log Vulnerability - vCenter
+  hosts: vcenter #change inventory to vcenter only
+  become: yes 
+  gather_facts: false
+  tasks:  
+    - name: Changing Shell To BASH
+      expect:
+        command: "sshpass -p {{ ansible_password }} ssh root@{{ inventory_hostname }}"
+        timeout: 2
+        responses:
+          'Command>': 'shell'
+          '# ': 'chsh -s /bin/bash root && logout'
+      delegate_to: localhost
+      ignore_errors: true
+    - name : Copy Fixer
+      copy: 
+        src=fix/vc_log4j_mitigator.py
+        dest=/tmp 
+        mode=0777
+    - name: Execute the script
+      shell: 
+        python /tmp/vc_log4j_mitigator.py -a
+      no_log: True
+      ignore_errors: yes 
+      register: lnxres
+    - name: LogFile
+      local_action: 
+        lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ lnxres.stdout }}"
+        insertafter=EOF 
+        dest=/root/Log4j/fix/log4j2-fix.log
+    - name: Delete file
+      file:
+        path: /tmp/vc_log4j_mitigator.py
+        state: absent
