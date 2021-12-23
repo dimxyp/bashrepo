@@ -12,7 +12,7 @@ echo "Download and unzip Kyndryl's scanners on /[installpath]/scan/"
 #echo "Download VMware vcenter fix on /[installpath]/fix/"
 echo "Prepare WinOS if needed using /[installpath]/scan/ConfigureRemotingForAnsible.ps1"
 echo "Extra packages: git, pexpect (vcfix), sshpass (vcfix)"
-NC='\033[0m' 
+echo -e "${NC}" 
 echo " = = = = = = = = = = = = = "
 echo -e "${GRN}" 
 echo " Execution:"
