@@ -4,7 +4,7 @@
 #
 [winos]
 #
-[vcenter:vars]
+[linuxos:vars] #or vcenter:vars
 ansible_user = root
 ansible_password = *******
 #ansible_sudo_pass = ******* #use for non root ssh logins only (i.e SRM)
