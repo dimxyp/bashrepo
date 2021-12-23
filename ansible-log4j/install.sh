@@ -15,8 +15,9 @@ echo "Prepare WinOS if needed using /[installpath]/scan/ConfigureRemotingForAnsi
 echo "Extra packages: git, pexpect (vcfix), sshpass (vcfix)"
 echo -e "${NC}" 
 echo " = = = = = = = = = = = = = "
-echo -e "${GRN}" 
+echo -e "${RED}"
 echo " Execution:"
+echo -e "${GRN}" 
 echo " Input linux and windows reachable hostnames/IPs on /[installpath]/inventory file"
 echo " Include username/password on inventery file or use Ansible-vault"
 echo " Check: ansible-playbook --check scan_play.yml (or vcfix_play.yml)"
@@ -24,11 +25,7 @@ echo " Run using: ansible-playbook scan_play.yml (or vcfix_play.yml)"
 echo -e "${NC}" 
 echo " ========================== "
 echo ""
-echo -e "${RED}"
-echo ""
 read -n 1 -r -s -p "Are you ready? Press any key to continue..." </dev/tty
-echo ""
-echo -e "${NC}" 
 echo ""
 read -e -p "Please enter playbook location ["/opt/Log4j"] : " -i "/opt/Log4j/" path </dev/tty
 mkdir /opt/Log4j/
