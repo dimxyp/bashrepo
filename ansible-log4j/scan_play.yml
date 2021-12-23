@@ -36,7 +36,7 @@
         src: scan/log4j2-scan.exe
         dest: C:\Windows\Temp\log4j2-scan.exe
     - name: Execute the script
-      win_command: C:\Windows\Temp\log4j2-scan.exe c:\support
+      win_command: C:\Windows\Temp\log4j2-scan.exe c:\ #or change c:\ to specific path
       no_log: True
       ignore_errors: yes 
       register: winres
