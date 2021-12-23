@@ -1,0 +1,3 @@
+vc_log4j_mitigator.py
+
+https://kb.vmware.com/sfc/servlet.shepherd/version/download/0685G00000d7ovWQAQ
