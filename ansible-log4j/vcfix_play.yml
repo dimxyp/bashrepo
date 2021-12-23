@@ -1,4 +1,5 @@
-#Kyndryl Log4j Fix 
+#Kyndryl Log4j automation vcenter fixer
+#https://github.com/dxfullv2/bashrepo -Log4j branch
 - name: Check for Java Log Vulnerability - vCenter
   hosts: vcenter #change inventory to vcenter only
   become: yes 
@@ -6,7 +7,7 @@
   tasks:  
     - name: Changing Shell To BASH
       expect:
-        command: "sshpass -p {{ ansible_password }} ssh root@{{ inventory_hostname }}"
+        command: "sshpass -p {{ ansible_password }} ssh root@{{ inventory_hostname }}" #enable permanent shell access
         timeout: 2
         responses:
           'Command>': 'shell'
@@ -28,7 +29,7 @@
       local_action: 
         lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ lnxres.stdout }}"
         insertafter=EOF 
-        dest=/root/Log4j/fix/log4j2-fix.log
+        dest=fix/log4j2-fix.log
     - name: Delete file
       file:
         path: /tmp/vc_log4j_mitigator.py
