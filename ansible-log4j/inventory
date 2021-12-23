@@ -1,0 +1,15 @@
+[linuxos]
+#
+[winos]
+#
+[vcenter:vars]
+ansible_user = root
+ansible_password = *******
+#ansible_sudo_pass = ******* #use for non root ssh logins only (i.e SRM)
+[winos:vars]
+ansible_user = username@domain
+ansible_password = *******
+ansible_connection = winrm
+ansible_winrm_server_cert_validation = ignore
+ansible_winrm_transport = ntlm
+
