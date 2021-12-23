@@ -1,6 +1,6 @@
 #Kyndryl Log4j automation checker
 - name: Check for Java Log Vulnerability - LinuxOS
-  hosts: linuxos #change to vcenter or duplicate task
+  hosts: linuxos # change to vcenter, or duplicate task
   become: yes 
   #become_method: sudo #use for non root ssh logins only (i.e SRM)
   #become_user: root #use for non root ssh logins only (i.e SRM)
@@ -22,7 +22,7 @@
       local_action: 
         lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ lnxres.stdout }}"
         insertafter=EOF 
-        dest=/root/Log4j/scan/log4j2-scan.log
+        dest=scan/log4j2-scan.log
     - name: Delete file
       file:
         path: /tmp/log4j2-scan
@@ -33,7 +33,7 @@
   tasks:
     - name : Copy Checker
       win_copy:
-        src: log4j2-scan.exe
+        src: scan/log4j2-scan.exe
         dest: C:\Windows\Temp\log4j2-scan.exe
     - name: Execute the script
       win_command: C:\Windows\Temp\log4j2-scan.exe c:\support
@@ -44,7 +44,7 @@
       local_action: 
         lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ winres.stdout }}"
         insertafter=EOF 
-        dest=/root/Log4j/scan/log4j2-scan.log
+        dest=scan/log4j2-scan.log
     - name: Delete file
       win_file:
         path: C:\Windows\Temp\log4j2-scan.exe
