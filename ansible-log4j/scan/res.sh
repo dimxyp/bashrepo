@@ -1,1 +1,1 @@
-v=( $(grep -n "Found CVE-2021-44228" log4j2-scan.log | cut -f1 -d:) ); for e in ${v[@]}; do sed '1,'$e'!d' log4j2-scan.log | grep "Server name=" | tail -1; sed ''$e','$e'!d' log4j2-scan.log | grep "Found CVE-2021-44228"; done
+v=( $(grep -n "Found CVE-2021-44228" log4j2-scan.log | cut -f1 -d:) ); for e in ${v[@]}; do sed '1,'$e'!d' log4j2-scan.log | grep --color='auto' "Server name=" | tail -1; sed ''$e','$e'!d' log4j2-scan.log | grep --color='auto' "Found CVE-2021-44228"; done
