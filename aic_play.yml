@@ -1,0 +1,104 @@
+#Kyndryl AIC standalone automation
+#https://github.com/dxfullv2/bashrepo -AIC branch
+- name: AIC standalone - LinuxOS
+  hosts: linuxos # change to vcenter, or duplicate task
+  vars_files:
+   - vars/main.yml
+  become: yes 
+  #become_method: sudo #use for non root ssh logins only (i.e SRM)
+  #become_user: root #use for non root ssh logins only (i.e SRM)
+  tasks:
+    - name : Copy Checker
+      copy: 
+        src=scan/log4j2-scan
+        dest=/tmp 
+        mode=0777
+    - name: Execute the script
+      shell: |
+        /tmp/log4j2-scan /usr
+        /tmp/log4j2-scan /opt
+        /tmp/log4j2-scan /home
+      no_log: True
+      ignore_errors: yes 
+      register: lnxres
+    - name: LogFile
+      local_action: 
+        lineinfile line="\n============================ \n-> Server name= {{inventory_hostname}} \n============================ \n\n{{ lnxres.stdout }}"
+        insertafter=EOF 
+        dest=scan/log4j2-scan.log
+    - name: Delete file
+      file:
+        path: /tmp/log4j2-scan
+        state: absent        
+- name: AIC standalone - WindowsOS
+  connection: winrm
+  hosts: winos
+  vars_files:
+   - vars/main.yml
+  tasks:
+    - name: "AIC standalone preparation"
+      block:
+          - name: "Mkdir AIC" 
+            win_file:
+              path: "{{ install_path }}"
+              state: directory
+          - name: "copy aic files"
+            win_copy: 
+              src: scripts/win/
+              dest: "{{ install_path }}"
+      when:
+          - copy_aic
+    - name: "AIC standalone execution"
+      block:
+          - name: "Install AIC"
+            win_shell: '{{ install_path }}\aic_install_standalone.ps1 "{{ Org_Code }}" >> {{ install_path }}\install.log'
+            args:
+              chdir: "{{ install_path }}"
+              creates: '{{ install_path }}\install.log'
+            when:
+                - install_aic
+          - name: "Wait for Scan AIC"
+            win_shell: '{{ install_path }}\aic_delay_standalone.ps1' 
+            when:
+                - scan_aic     
+          - name: "Scan AIC"
+            win_shell: '{{ install_path }}\aic_scan_standalone.ps1 >> {{ install_path }}\scan.log'
+            args:
+              chdir: "{{ install_path }}"
+              creates: '{{ install_path }}\scan.log'
+            when:
+                - scan_aic
+          - name: "Fetch AIC"
+            win_shell: '{{ install_path }}\aic_fetch_standalone.ps1 >> {{ install_path }}\fetch.log'
+            args:
+              chdir: "{{ install_path }}"
+              creates: '{{ install_path }}\fetch.log'
+            when:
+                - fetch_aic
+          - name: "Real Fetch AIC"
+            fetch:
+              src: C:\Program Files\GTS\CIT\README.md
+              dest: fetch/
+              flat: yes
+            when:
+                - realfetch_aic
+          - name: "Uninstall AIC"
+            win_shell: '{{ install_path }}\aic_uninstall_standalone.ps1 >> {{ install_path }}\uninstall.log'
+            args:
+              chdir: "{{ install_path }}"
+              creates: '{{ install_path }}\uninstall.log'
+            when:
+                - uninstall_aic
+
+    - name: "AIC directory deletion"
+      block:
+          - name: "Sleep 10 sec"
+            pause:
+              seconds: 10
+          - name: "Delete AIC" 
+            win_file:
+              path: "{{ install_path }}"
+              state: absent
+      when:
+          - delete_aic
+   
