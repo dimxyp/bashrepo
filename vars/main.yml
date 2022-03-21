@@ -1,0 +1,32 @@
+################# / General Vairables \ #################
+
+Org_Code: AAA
+
+win_install_path: C:\Windows\Temp\aic
+
+lnx_install_path: /var/opt/GTS # please do not change 
+
+fetch_path: fetch/
+ 
+################## / General Options \ ##################
+
+copy_aic: false #Copy Files Locally (false to skip)
+
+install_aic: false #Install & Execute & Fetch
+
+scan_aic: false
+
+waitscan_aic: false
+
+fetch_aic: false
+
+realfetch_aic: false
+
+uninstall_aic: true #Uninstall only
+
+delete_aic: true #delete aic temp directory
+
+
+
+
+
