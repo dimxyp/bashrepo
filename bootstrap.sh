@@ -1,4 +1,9 @@
 #!/bin/sh
+# added  .bash_profile
+# touch /root/firstrun
+# passd -d root
+# touch ~/.hushlogin
+# /lib/systemd/system/getty@.service  | ExecStart=-/sbin/agetty --noclear -a root %I $TERM
 func_pass () {
  read -s -rep $'Please enter password :\n' PASS </dev/tty
  read -s -rep $'Please enter again :\n' PASS2 </dev/tty
@@ -14,7 +19,7 @@ then
     echo -ne "\x1b[0m"
     echo "==================================================="
     echo -ne "\x1b[33m"
-    echo "Setup the hostname of the server!"
+    echo "Setup the hostname of the server"
     echo -ne "\x1b[0m"
     echo "==================================================="
     read -e -p "Please enter hostname : " NAME </dev/tty   
@@ -29,7 +34,7 @@ then
     else 
     echo "==================================================="
      echo -ne "\x1b[33m"
-    echo "Ethernet device$nic Configuration!"
+    echo "Ethernet device$nic Configuration"
     echo -ne "\x1b[0m"
     echo "==================================================="
     read -e -p "Please enter IP address : " IP </dev/tty
@@ -56,8 +61,8 @@ then
         hostname $NAME
         hostnamectl set-hostname $NAME
         echo -e "\x1b[32m[OK]"; echo -ne "\x1b[0m"
-        echo -n "Configure root Password..."
         echo $PASS | passwd --stdin root 
+        echo -n "Configure root Password..."
         echo -e "\x1b[32m[OK]"; echo -ne "\x1b[0m"
         echo -n "Configure Network..."
 	    # nmcli connection modify $nic IPv4.address $IP/$MASK
@@ -71,12 +76,14 @@ then
         echo -e "\x1b[32m[OK]"; echo -ne "\x1b[0m"
         echo -n "Configure ThreeCode..."
         sed -i "s/TCODE/$TCODE/g" /root/AICstandalone/vars/main.yml
+        echo -e "\x1b[32m[OK]"; echo -ne "\x1b[0m"  
         sleep 1
         echo -n "Configure CleanUp..."
         sed -i 's/-a root//g' /lib/systemd/system/getty@.service
         #rm -f /root/firstrun
         #mv -f /root/bootstrap.sh /tmp
         echo -e "\x1b[32m[OK]"; echo -ne "\x1b[0m"  
+        echo ""
         echo "Network Output:"
         ip a | grep $nic
         echo "Server will be restarted, continue (y/n)"
