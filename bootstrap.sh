@@ -5,7 +5,7 @@
 # touch ~/.hushlogin
 # /lib/systemd/system/getty@.service  | ExecStart=-/sbin/agetty --noclear -a root %I $TERM
 func_pass () {
- read -s -rep $'Please enter password :\n' PASS </dev/tty
+ read -s -rep $'Please enter root password :\n' PASS </dev/tty
  read -s -rep $'Please enter again :\n' PASS2 </dev/tty
 }
 touch /var/lock/subsys/local
