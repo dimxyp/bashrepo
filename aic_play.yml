@@ -2,6 +2,7 @@
 #https://github.com/dxfullv2/bashrepo -AIC branch
 - name: AIC Standalone - LinuxOS
   hosts: linuxos
+  forks: 6
   vars_files:
    - vars/main.yml
   tasks:
@@ -17,6 +18,7 @@
             copy: 
               src: scripts/lnx/
               dest: "{{ lnx_install_path }}"
+              mode: 0755
       when:
           - copy_aic
 
@@ -24,17 +26,18 @@
     - name: "AIC Standalone Execution"
       block:
           - name: "Install AIC"
-            win_shell: '{{ lnx_install_path }}\aic_install_standalone.ps1 "{{ Org_Code }}" >> {{ win_install_path }}\install.log'
+            shell: '{{ lnx_install_path }}/aic_install_standalone.sh "{{ Org_Code }}" >> {{ lnx_install_path }}/install.log'
             args:
-              chdir: "{{ lnx_install_path }}"
-              creates: '{{ lnx_install_path }}\install.log'
+              creates: '{{ lnx_install_path }}/install.log'
             when:
                 - install_aic
 
           - name: "NoCron AIC"   
-            win_shell: '{{ win_install_path }}\aic_nocron_standalone.ps1'
-            args:
-              chdir: "{{ win_install_path }}"
+            shell: |
+              sed -i '/scan_aic.sh/ s/^/#/' /var/spool/cron/*
+              sed -i '/run_hw_CRON.sh/ s/^/#/' /var/spool/cron/*
+              sed -i '/scan_aic.sh/ s/^/#/' /etc/crontab
+              sed -i '/run_hw_CRON.sh/ s/^/#/' /etc/crontab
             when:
                 - install_aic      
 
@@ -42,37 +45,42 @@
     - name: "AIC Standalone Scanning"
       block:
           - name: "Scan AIC"
-            win_shell: '{{ win_install_path }}\aic_scan_standalone.ps1 >> {{ win_install_path }}\scan.log'
+            shell: '{{ lnx_install_path }}/aic_scan_standalone.sh >> {{ lnx_install_path }}/scan.log'
             args:
-              chdir: "{{ win_install_path }}"
-              creates: '{{ win_install_path }}\scan.log'
+              creates: '{{ lnx_install_path }}/scan.log'
             when:
                 - scan_aic
 
-          - name: "Wait for Scan AIC"
-            win_shell: '{{ win_install_path }}\aic_delay_standalone.ps1' 
-            args:
-              chdir: "{{ win_install_path }}"
-            when:
-                - waitscan_aic  
+          # - name: "Wait for Scan AIC"
+          #   win_shell: '{{ win_install_path }}\aic_delay_standalone.ps1' 
+          #   args:
+          #     chdir: "{{ win_install_path }}"
+          #   when:
+          #       - waitscan_aic  
 
    # Run Zipping and Fetching locally on ansible server (fetch_path)
     - name: "AIC Standalone Fetching"
       block:
-          - name: "Zipping Output AIC"
-            win_shell: '{{ win_install_path }}\aic_fetch_standalone.ps1 >> {{ win_install_path }}\fetch.log'
+          - name: "Packing Output AIC"
+            shell: '{{ lnx_install_path }}/aic_pack_standalone.sh >> {{ lnx_install_path }}/pack.log'
             args:
-              chdir: "{{ win_install_path }}"
-              creates: '{{ win_install_path }}\fetch.log'
+              creates: '{{ lnx_install_path }}/pack.log'
+            when:
+                - fetch_aic
+
+          - name: "Zipping Output AIC"
+            shell: '{{ lnx_install_path }}/aic_fetch_standalone.sh >> {{ lnx_install_path }}/fetch.log'
+            args:
+              creates: '{{ lnx_install_path }}/fetch.log'
             when:
                 - fetch_aic
 
           - name: "Real Fetch AIC"
-            win_find: 
-              paths: 'C:\Program Files\GTS\aic_output'
+            find: 
+              paths: '/var/opt/GTS/aic_output'
               recurse: no 
-              patterns: '*.zip'
-            register: zip_files
+              patterns: '*.tar.gz'
+            register: tar_files
             when:
                 - realfetch_aic
 
@@ -81,18 +89,17 @@
               src: "{{ item.path }}"
               dest: "{{ fetch_path }}"
               flat: yes
-            with_items: "{{ zip_files.files }}"
+            with_items: "{{ tar_files.files }}"
             when:
                 - realfetch_aic
 
-   # Uninstall AIC and remove files 
+   # Uninstall AIC and Remove files 
     - name: "AIC Standalone Uninstall"
       block:
           - name: "Uninstall AIC"
-            win_shell: '{{ win_install_path }}\aic_uninstall_standalone.ps1 >> {{ win_install_path }}\uninstall.log'
+            shell: '{{ lnx_install_path }}/aic_uninstall_standalone.sh >> {{ lnx_install_path }}/uninstall.log'
             args:
-              chdir: "{{ win_install_path }}"
-              creates: '{{ win_install_path }}\uninstall.log'
+              creates: '{{ lnx_install_path }}/uninstall.log'
             when:
                 - uninstall_aic
 
@@ -100,13 +107,128 @@
       block:
           - name: "Sleep 10 sec"
             pause:
-              seconds: 10
+              seconds: 5
           - name: "Delete AIC" 
-            win_file:
-              path: "{{ win_install_path }}"
+            file:
+              path: "{{ lnx_install_path }}"
               state: absent
       when:
           - delete_aic
+
+- name: AIC Standalone - AIXOS
+  hosts: aixos
+  vars_files:
+   - vars/main.yml
+  tasks:
+  
+   # Create directories and copy loccaly scripts/win files
+    - name: "AIC Standalone Preparation"
+      block:
+          - name: "Mkdir AIC" 
+            file:
+              path: "{{ lnx_install_path }}"
+              state: directory
+          - name: "Copy AIC"
+            copy: 
+              src: scripts/lnx/
+              dest: "{{ lnx_install_path }}"
+              mode: 0755
+      when:
+          - copy_aic
+
+   # Start execution of standalone powershell script, modify auto created schedule task for no-auto actication using nocron ps script
+    - name: "AIC Standalone Execution"
+      block:
+          - name: "Install AIC"
+            shell: '{{ lnx_install_path }}/aic_install_standalone.sh "{{ Org_Code }}" >> {{ lnx_install_path }}/install.log'
+            args:
+              creates: '{{ lnx_install_path }}/install.log'
+            when:
+                - install_aic
+
+          - name: "NoCron AIC"   
+            shell: |
+              sed -i '/scan_aic.sh/ s/^/#/' /var/spool/cron/*
+              sed -i '/run_hw_CRON.sh/ s/^/#/' /var/spool/cron/*
+              sed -i '/scan_aic.sh/ s/^/#/' /etc/crontab
+              sed -i '/run_hw_CRON.sh/ s/^/#/' /etc/crontab
+            when:
+                - install_aic      
+
+   # Start AIC scanning, check waitscan_aic policy for wait or not
+    - name: "AIC Standalone Scanning"
+      block:
+          - name: "Scan AIC"
+            shell: '{{ lnx_install_path }}/aic_scan_standalone.sh >> {{ lnx_install_path }}/scan.log'
+            args:
+              creates: '{{ lnx_install_path }}/scan.log'
+            when:
+                - scan_aic
+
+          # - name: "Wait for Scan AIC"
+          #   win_shell: '{{ win_install_path }}\aic_delay_standalone.ps1' 
+          #   args:
+          #     chdir: "{{ win_install_path }}"
+          #   when:
+          #       - waitscan_aic  
+
+   # Run Zipping and Fetching locally on ansible server (fetch_path)
+    - name: "AIC Standalone Fetching"
+      block:
+          - name: "Packing Output AIC"
+            shell: '{{ lnx_install_path }}/aic_pack_standalone.sh >> {{ lnx_install_path }}/pack.log'
+            args:
+              creates: '{{ lnx_install_path }}/pack.log'
+            when:
+                - fetch_aic
+
+          - name: "Zipping Output AIC"
+            shell: '{{ lnx_install_path }}/aic_fetch_standalone.sh >> {{ lnx_install_path }}/fetch.log'
+            args:
+              creates: '{{ lnx_install_path }}/fetch.log'
+            when:
+                - fetch_aic
+
+          - name: "Real Fetch AIC"
+            find: 
+              paths: '/var/opt/GTS/aic_output'
+              recurse: no 
+              patterns: '*.tar.gz'
+            register: tar_files
+            when:
+                - realfetch_aic
+
+          - name: "Copy files Locally"
+            fetch: 
+              src: "{{ item.path }}"
+              dest: "{{ fetch_path }}"
+              flat: yes
+            with_items: "{{ tar_files.files }}"
+            when:
+                - realfetch_aic
+
+   # Uninstall AIC and Remove files 
+    - name: "AIC Standalone Uninstall"
+      block:
+          - name: "Uninstall AIC"
+            shell: '{{ lnx_install_path }}/aic_uninstall_standalone.sh >> {{ lnx_install_path }}/uninstall.log'
+            args:
+              creates: '{{ lnx_install_path }}/uninstall.log'
+            when:
+                - uninstall_aic
+
+    - name: "AIC Directory Deletion"
+      block:
+          - name: "Sleep 10 sec"
+            pause:
+              seconds: 5
+          - name: "Delete AIC" 
+            file:
+              path: "{{ lnx_install_path }}"
+              state: absent
+      when:
+          - delete_aic
+
 - name: AIC Standalone - WindowsOS
   connection: winrm
   hosts: winos
@@ -177,7 +299,7 @@
 
           - name: "Real Fetch AIC"
             win_find: 
-              paths: 'C:\Program Files\GTS\aic_output'
+              paths: C:\Program Files\GTS\aic_output
               recurse: no 
               patterns: '*.zip'
             register: zip_files
@@ -193,7 +315,7 @@
             when:
                 - realfetch_aic
 
-   # Uninstall AIC and remove files 
+   # Uninstall AIC and Remove files 
     - name: "AIC Standalone Uninstall"
       block:
           - name: "Uninstall AIC"
@@ -208,10 +330,14 @@
       block:
           - name: "Sleep 10 sec"
             pause:
-              seconds: 10
+              seconds: 5
           - name: "Delete AIC" 
             win_file:
               path: "{{ win_install_path }}"
+              state: absent
+          - name: "Delete AIC Program Files" 
+            win_file:
+              path: C:\Program Files\GTS\
               state: absent
       when:
           - delete_aic
