@@ -2,7 +2,7 @@
 # added  .bash_profile
 # touch /root/firstrun
 # passd -d root
-#
+# /lib/systemd/system/getty@.service  | ExecStart=-/sbin/agetty --noclear -a root %I $TERM
 
 touch /var/lock/subsys/local
 plymouth quit
@@ -15,6 +15,7 @@ then
     echo "Setup the hostname of the server!"
     echo "==================================================="
     read -e -p "Please enter hostname : " NAME </dev/tty   
+    read -e -p "Please enter password : " PASS </dev/tty  
     echo "==================================================="
     echo "Ethernet device$nic Configuration!"
     echo "==================================================="
@@ -34,6 +35,7 @@ then
         echo $NAME > /etc/hostname
         hostname $NAME
         hostnamectl set-hostname $NAME
+	echo $PASS | passwd --stdin root 
         # Configure network
 	    # nmcli connection modify $nic IPv4.address $IP/$MASK
         # nmcli connection modify $nic IPv4.gateway $GATEWAY
@@ -55,6 +57,8 @@ then
         # ip a | grep $nic
         # echo "==================================================="
         #echo "Moving the script so that it won't execute again!"
+	sed -i 's/-a root//g' /lib/systemd/system/getty@.service
+
         rm -f /root/firstrun
         mv -f /root/bootstrap.sh /tmp
         echo "Backup created at /tmp with name update.sh"
